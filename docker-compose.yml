@@ -1,0 +1,6 @@
+version: '3'
+services:
+  semeinik-spring-app:
+    image: test-semeinik
+    ports:
+      - "8080:8080"
