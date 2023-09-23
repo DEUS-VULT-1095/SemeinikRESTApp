@@ -28,8 +28,8 @@ import java.util.Map;
 @Component
 public class JWTUtil {
     /** Секрет для создания подписи. */
-    @Value("${jwtSecret}")
-    private String secret; // Секретный ключ, хранящийся в application.properties
+    @Value("${jwt-secret}")
+    private String secret; // Секретный ключ, хранящийся в .env
 
     /**
      * Метод для генерации JWT-токена на основе переданных данных.

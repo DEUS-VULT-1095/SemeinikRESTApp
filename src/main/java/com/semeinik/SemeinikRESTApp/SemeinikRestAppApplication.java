@@ -4,15 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.Map;
-import java.util.Random;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  * Главный класс приложения SemeinikRestAppApplication.
@@ -22,6 +14,7 @@ import java.util.Random;
  * @version 1.0
  */
 @SpringBootApplication
+@PropertySource("file:${user.dir}/.env")
 public class SemeinikRestAppApplication {
 
 	/**
