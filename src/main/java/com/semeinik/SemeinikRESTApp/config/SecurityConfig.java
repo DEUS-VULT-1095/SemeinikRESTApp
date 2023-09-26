@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/auth/register-person-and-create-family", "/auth/register-person-and-join-the-family",
-                        "/auth/login", "/auth/refresh-tokens", "/activate/**").permitAll()
+                        "/auth/login", "/auth/refresh-tokens", "/activate/**", "/auth/email-exist").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

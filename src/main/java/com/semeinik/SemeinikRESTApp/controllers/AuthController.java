@@ -170,7 +170,7 @@ public class AuthController {
      * и статусом HttpStatus.OK, если проверка выполнена успешно.
      * @throws InvalidEmailException если входные данные не содержат email-формат.
      */
-    @GetMapping("/exist-email")
+    @PostMapping("/exist-email")
     public ResponseEntity<Boolean> existEmail(@RequestBody @Valid EmailDTO emailDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {

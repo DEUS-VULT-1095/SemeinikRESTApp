@@ -12,11 +12,6 @@ public class AuthDTO {
     private String email; // Электронная почта пользователя.
     private String password; // Пароль пользователя.
 
-    public AuthDTO(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
     public String getEmail() {
         return email;
     }

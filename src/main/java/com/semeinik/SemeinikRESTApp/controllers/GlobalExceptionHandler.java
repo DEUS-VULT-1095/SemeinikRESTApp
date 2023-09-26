@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> handleTokenExpiredException(TokenExpiredException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler
@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> handleInvalidCookieException(InvalidCookieException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> handleActivationAccountException(ActivationAccountException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler
@@ -99,14 +99,14 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> handleInvalidActivationTokenException(InvalidActivationTokenException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleActivationTokenNotFoundException(ActivationTokenNotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
