@@ -2,7 +2,7 @@ package com.semeinik.SemeinikRESTApp.controllers;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.semeinik.SemeinikRESTApp.exceptions.*;
-import com.semeinik.SemeinikRESTApp.utils.ErrorResponse;
+import com.semeinik.SemeinikRESTApp.models.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> handleActivationAccountException(ActivationAccountException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler

@@ -1,6 +1,5 @@
 package com.semeinik.SemeinikRESTApp.utils;
 
-import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -12,7 +11,10 @@ import java.util.Base64;
  * @author Denis Kolesnikov
  * @version 1.0
  */
-public class SaltGenerator {
+public final class SaltGenerator {
+
+    private SaltGenerator() {
+    }
 
     /**
      * Генерирует случайную соль (Salt) и возвращает ее в виде строки, закодированной в Base64.

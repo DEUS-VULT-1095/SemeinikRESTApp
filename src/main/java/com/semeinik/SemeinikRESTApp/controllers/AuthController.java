@@ -1,12 +1,7 @@
 package com.semeinik.SemeinikRESTApp.controllers;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.semeinik.SemeinikRESTApp.dto.*;
-import com.semeinik.SemeinikRESTApp.exceptions.ActivationAccountException;
 import com.semeinik.SemeinikRESTApp.exceptions.InvalidEmailException;
-import com.semeinik.SemeinikRESTApp.exceptions.RequestNotContainCookiesException;
-import com.semeinik.SemeinikRESTApp.models.Family;
-import com.semeinik.SemeinikRESTApp.models.Person;
 import com.semeinik.SemeinikRESTApp.security.JWTUtil;
 import com.semeinik.SemeinikRESTApp.services.*;
 import com.semeinik.SemeinikRESTApp.utils.PersonDTOValidator;
@@ -17,9 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,58 +54,22 @@ public class AuthController {
     }
 
     /**
-     * Метод выполняет регистрацию пользователя и создание семьи на основе предоставленных данных.
+     * Выполняет регистрацию пользователя.
      *
-     * @param registrationRequestWithCreateFamily Запрос на регистрацию, содержащий данные пользователя и семьи ({@link RegistrationRequestWithCreateFamily}).
-     * @param bindingResult                       Результат валидации запроса.
-     * @return ResponseEntity с ответом на запрос, включая идентификатор семьи и статус HttpStatus.CREATED, если регистрация успешна.
-     * @throws PersonNotAddedException если возникли ошибки при добавлении пользователя.
-     * @see RegistrationRequestWithCreateFamily
-     * @see PersonDTOValidator
-     * @see Person
-     * @see Family
+     * @param personDTO {@link PersonDTO} Объект, содержащий данные пользователя для регистрации.
+     * @param bindingResult Результаты проверки входных данных.
      */
-    @PostMapping("/register-person-and-create-family")
-    public ResponseEntity<RegistrationResponseWithCreateFamily> performRegistrationAndCreateFamily(@RequestBody @Valid RegistrationRequestWithCreateFamily registrationRequestWithCreateFamily,
-                                                                                                   BindingResult bindingResult) {
+    @PostMapping("/register-person")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void performRegistrationPerson(@RequestBody @Valid PersonDTO personDTO, BindingResult bindingResult) {
 
-        personDTOValidator.validate(registrationRequestWithCreateFamily.getPersonDTO(), bindingResult);
+        personDTOValidator.validate(personDTO, bindingResult);
 
         if (bindingResult.hasErrors()) {
             throw new PersonNotAddedException(createErrorMsg(bindingResult));
         }
 
-        RegistrationResponseWithCreateFamily response = registrationService.performRegistrationAndCreateFamily(registrationRequestWithCreateFamily);
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    /**
-     * Метод выполняет регистрацию пользователя и присоединение к уже существующей семье на основе предоставленных данных.
-     *
-     * @param registrationRequestJoinFamily Запрос на регистрацию и присоединение к семье, содержащий данные
-     *                                      пользователя и идентификатор семьи ({@link RegistrationRequestJoinFamily}).
-     * @param bindingResult                 Результат валидации запроса.
-     * @return ResponseEntity со статусом HttpStatus.CREATED, если регистрация успешна.
-     * @throws PersonNotAddedException если возникли ошибки при добавлении пользователя.
-     * @see RegistrationRequestJoinFamily
-     * @see PersonDTOValidator
-     * @see Person
-     * @see Family
-     */
-    @PostMapping("/register-person-and-join-the-family")
-    public ResponseEntity<Object> performRegistrationAndJoinTheFamily(@RequestBody @Valid RegistrationRequestJoinFamily registrationRequestJoinFamily,
-                                                                      BindingResult bindingResult) {
-
-        personDTOValidator.validate(registrationRequestJoinFamily.getPersonDTO(), bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            throw new PersonNotAddedException(createErrorMsg(bindingResult));
-        }
-
-        registrationService.performRegistrationAndJoinTheFamily(registrationRequestJoinFamily);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        registrationService.performRegistrationPerson(personDTO);
     }
 
     /**
@@ -164,20 +120,14 @@ public class AuthController {
     /**
      * Проверяет наличие пользователя с заданным адресом электронной почты в БД.
      *
-     * @param emailDTO      DTO (Data Transfer Object) с адресом электронной почты для проверки ({@link EmailDTO}).
-     * @param bindingResult Результаты проверки входных данных.
+     * @param email      Адрес электронной почты для проверки, есть ли он уже в БД.
      * @return ResponseEntity с булевым значением, указывающим наличие пользователя с заданным адресом электронной почты,
      * и статусом HttpStatus.OK, если проверка выполнена успешно.
-     * @throws InvalidEmailException если входные данные не содержат email-формат.
      */
-    @PostMapping("/exist-email")
-    public ResponseEntity<Boolean> existEmail(@RequestBody @Valid EmailDTO emailDTO, BindingResult bindingResult) {
+    @GetMapping("/exist-email")
+    public ResponseEntity<Boolean> existEmail(@RequestParam String email) {
 
-        if (bindingResult.hasErrors()) {
-            throw new InvalidEmailException(createErrorMsg(bindingResult));
-        }
-
-        return ResponseEntity.ok(peopleService.findByEmail(emailDTO.getEmail()).isPresent());
+        return ResponseEntity.ok(peopleService.findByEmail(email).isPresent());
     }
 
     // тестовый метод

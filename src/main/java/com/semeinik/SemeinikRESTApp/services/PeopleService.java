@@ -1,6 +1,7 @@
 package com.semeinik.SemeinikRESTApp.services;
 
-import com.semeinik.SemeinikRESTApp.models.ActivationToken;
+import com.semeinik.SemeinikRESTApp.dto.PersonDTO;
+import com.semeinik.SemeinikRESTApp.mappers.PersonMapper;
 import com.semeinik.SemeinikRESTApp.models.Person;
 import com.semeinik.SemeinikRESTApp.repositories.PeopleRepository;
 import com.semeinik.SemeinikRESTApp.utils.SaltGenerator;
@@ -14,8 +15,9 @@ import java.util.Optional;
 /**
  * Сервисный класс для работы с данными пользователей ({@link Person}).
  *
- * Этот класс предоставляет методы для управления данными пользователей, такими как сохранение новых данных о пользователе,
- * поиск пользователя по адресу электронной почты и генерацию и отправку электронных писем для активации учетных записей.
+ * Этот класс предоставляет методы для управления данными пользователей, такими как сохранение, поиск, редактирование,
+ * удаление и т.п.
+ *
  * @Transactional(readOnly = true) Эта аннотация означает, что все методы этого класса будут выполняться внутри транзакций
  * только для чтения. Если метод выполняет не только чтение, нужно пометить его аннотацией {@code @Transactional}.
  *
@@ -26,48 +28,52 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class PeopleService {
     private final PeopleRepository peopleRepository;
+    private final PersonMapper personMapper;
     private final PasswordEncoder passwordEncoder;
-    private final ActivationTokensService activationTokensService;
 
     /**
-     * Конструктор класса, принимающий {@link PeopleRepository}, {@link PasswordEncoder}, {@link EmailService} и
-     * {@link ActivationTokensService} в качестве зависимостей.
-     * @param peopleRepository       Репозиторий для работы с данными пользователей({@link PeopleRepository}).
-     * @param passwordEncoder        Инструмент для кодирования паролей ({@link PasswordEncoder}).
-     * @param activationTokensService Сервис для работы с активационными токенами ({@link ActivationTokensService}).
+     * Конструктор класса, принимающий {@link PeopleRepository}.
+     *
+     * @param peopleRepository Репозиторий для работы с данными пользователей({@link PeopleRepository}).
+     * @param personMapper     Маппер для преобразования данных {@link PersonDTO} в сущность {@link Person} и наоборот.
+     * @param passwordEncoder  Инструмент для кодирования паролей ({@link PasswordEncoder}).
      */
     @Autowired
-    public PeopleService(PeopleRepository peopleRepository, PasswordEncoder passwordEncoder, ActivationTokensService activationTokensService) {
+    public PeopleService(PeopleRepository peopleRepository, PersonMapper personMapper, PasswordEncoder passwordEncoder) {
         this.peopleRepository = peopleRepository;
+        this.personMapper = personMapper;
         this.passwordEncoder = passwordEncoder;
-        this.activationTokensService = activationTokensService;
     }
 
     /**
-     * Сохранение новых данных пользователя, включая кодирование пароля, генерацию и сохранение активационного токена
-     * ({@link ActivationToken}).
+     * Сохранение пользователя в БД, предварительно назначая поля.
      *
-     * @param person Данные пользователя ({@link Person}) для сохранения.
+     * @param personDTO {@link PersonDTO} Объект передачи данных пользователя {@link Person}
      */
     @Transactional
-    public void createPersonWithActivationToken(Person person) {
+    public Person savePerson(PersonDTO personDTO) {
+        Person person = personMapper.convertToPerson(personDTO);
         String salt;
 
         do {
             salt = SaltGenerator.generateSalt();
-        } while (peopleRepository.findBySalt(salt).isPresent());
+        } while (findBySalt(salt).isPresent());
 
         person.setSalt(salt);
-
         person.setPassword(passwordEncoder.encode(person.getPassword() + salt));
-
         person.setRole("ROLE_USER");
-
-        ActivationToken activationToken = activationTokensService.generateActivationTokenAndSave(person);
-
-        person.setActivationToken(activationToken);
-
         peopleRepository.save(person);
+
+        return person;
+    }
+
+    /**
+     * Поиск пользователя по соли.
+     * @param salt Соль.
+     * @return Данные пользователя, соответствующие указанной соли, если он существет.
+     */
+    public Optional<Person> findBySalt(String salt) {
+        return peopleRepository.findBySalt(salt);
     }
 
     /**

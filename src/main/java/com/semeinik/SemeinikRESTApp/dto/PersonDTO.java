@@ -35,6 +35,18 @@ public class PersonDTO {
     private String password; // Пароль пользователя.
     private String confirmPassword; // Подтверждение пароля пользователя.
 
+    public PersonDTO() {
+    }
+
+    public PersonDTO(String email, String name, LocalDate dateOfBirth, FamilyRole familyRole, String password, String confirmPassword) {
+        this.email = email;
+        this.name = name;
+        this.dateOfBirth = dateOfBirth;
+        this.familyRole = familyRole;
+        this.password = password;
+        this.confirmPassword = confirmPassword;
+    }
+
     public String getEmail() {
         return email;
     }

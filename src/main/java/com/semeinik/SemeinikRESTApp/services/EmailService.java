@@ -39,7 +39,8 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Activate Your Account");
-        message.setText("Click the link below to activate your account:\n" + "http://localhost:8080/activate/" + activationToken);
+        message.setText("Click the link below to activate your account:\n"
+                + "http://localhost:8080/activate/activation-token/" + activationToken);
         javaMailSender.send(message);
     }
 }

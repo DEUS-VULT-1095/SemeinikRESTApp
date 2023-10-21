@@ -13,7 +13,10 @@ import java.util.UUID;
  * @author Denis Kolesnikov
  * @version 1.0
  */
-public class CookieGenerator {
+public final class CookieGenerator {
+
+    private CookieGenerator() {
+    }
 
     /**
      * Генерирует новый куки ({@link Cookie}) для хранения Refresh Token.

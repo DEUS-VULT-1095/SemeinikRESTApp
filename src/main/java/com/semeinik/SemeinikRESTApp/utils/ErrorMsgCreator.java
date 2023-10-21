@@ -10,7 +10,10 @@ import java.util.List;
  * Этот класс предоставляет статический метод для создания текстового сообщения, содержащего
  * информацию о полях, в которых возникли ошибки, и соответствующих сообщениях об ошибках.
  */
-public class ErrorMsgCreator {
+public final class ErrorMsgCreator {
+
+    private ErrorMsgCreator() {
+    }
 
     /**
      * Создает текстовое сообщение об ошибках на основе данных из BindingResult.

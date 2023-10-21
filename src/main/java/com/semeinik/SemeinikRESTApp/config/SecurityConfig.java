@@ -1,14 +1,10 @@
 package com.semeinik.SemeinikRESTApp.config;
 
-import com.semeinik.SemeinikRESTApp.controllers.GlobalExceptionHandler;
 import com.semeinik.SemeinikRESTApp.services.PersonDetailsService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,7 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -59,8 +54,8 @@ public class SecurityConfig {
         httpSecurity
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/register-person-and-create-family", "/auth/register-person-and-join-the-family",
-                        "/auth/login", "/auth/refresh-tokens", "/activate/**", "/auth/email-exist").permitAll()
+                .requestMatchers("/auth/login", "/auth/refresh-tokens", "/activate/**", "/auth/exist-email",
+                        "/auth/register-person", "/family/exist-family-identifier").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

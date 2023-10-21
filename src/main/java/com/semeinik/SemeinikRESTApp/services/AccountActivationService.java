@@ -7,8 +7,6 @@ import com.semeinik.SemeinikRESTApp.exceptions.PersonNotFoundException;
 import com.semeinik.SemeinikRESTApp.models.ActivationToken;
 import com.semeinik.SemeinikRESTApp.models.Person;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,12 +30,13 @@ public class AccountActivationService {
     /**
      * Конструктор сервиса для работы с активацией аккаунта.
      *
-     * @param activationTokensService Сервис для работы с активационными токенами {@link ActivationToken} ({@link ActivationTokensService}).
-     * @param peopleService Сервис для работы с пользователями {@link Person} ({@link PeopleService}).
-     * @param emailService Сервия для отправки писем на email ({@link EmailService}).
+     * @param activationTokensService  Сервис для работы с активационными токенами {@link ActivationToken} ({@link ActivationTokensService}).
+     * @param peopleService            Сервис для работы с пользователями {@link Person} ({@link PeopleService}).
+     * @param emailService             Сервия для отправки писем на email ({@link EmailService}).
      */
     @Autowired
-    public AccountActivationService(ActivationTokensService activationTokensService, PeopleService peopleService, EmailService emailService) {
+    public AccountActivationService(ActivationTokensService activationTokensService, PeopleService peopleService,
+                                    EmailService emailService) {
         this.activationTokensService = activationTokensService;
         this.peopleService = peopleService;
         this.emailService = emailService;
@@ -75,15 +74,14 @@ public class AccountActivationService {
      * Метод {@code sendActivationLink} отправляет активационное письмо на email пользователя для завершения
      * процедуры регистрации.
      *
-     * @throws PersonNotFoundException       Если учетная запись пользователя не найдена.
-     * @throws ActivationAccountException    Если учетная запись уже активирована.
+     * @param email Почта, на которую отправляется ссылка с активационным токеном.
+     * @throws PersonNotFoundException    Если учетная запись пользователя не найдена.
+     * @throws ActivationAccountException Если учетная запись уже активирована.
      */
     @Transactional
-    public void sendActivationLink() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        Person person = peopleService.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new PersonNotFoundException("Person with email \"" + userDetails.getUsername() + "\" not found"));
+    public void sendActivationLink(String email) {
+        Person person = peopleService.findByEmail(email)
+                .orElseThrow(() -> new PersonNotFoundException("Person with email \"" + email + "\" not found"));
 
         if (person.isActivated()) {
             throw new ActivationAccountException("This account email \"" + person.getEmail() + "\" confirmed");
@@ -94,9 +92,7 @@ public class AccountActivationService {
         }
 
         ActivationToken activationToken = activationTokensService.generateActivationTokenAndSave(person);
-
         person.setActivationToken(activationToken);
-
         emailService.sendActivationEmail(person.getEmail(), activationToken.getToken().toString());
     }
 }

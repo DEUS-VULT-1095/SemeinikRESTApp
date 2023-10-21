@@ -15,7 +15,7 @@ import org.springframework.validation.Validator;
  * @version 1.0
  */
 @Component
-public class PersonDTOValidator implements Validator {
+public final class PersonDTOValidator implements Validator {
     private final PeopleService peopleService;
 
     /**
@@ -24,7 +24,7 @@ public class PersonDTOValidator implements Validator {
      * @param peopleService Сервис для работы с данными о людях ({@link PeopleService}).
      */
     @Autowired
-    public PersonDTOValidator(PeopleService peopleService) {
+    private PersonDTOValidator(PeopleService peopleService) {
         this.peopleService = peopleService;
     }
 

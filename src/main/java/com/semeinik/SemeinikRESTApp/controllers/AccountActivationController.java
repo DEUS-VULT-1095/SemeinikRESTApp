@@ -1,23 +1,11 @@
 package com.semeinik.SemeinikRESTApp.controllers;
 
-import com.semeinik.SemeinikRESTApp.exceptions.ActivationTokenNotFoundException;
-import com.semeinik.SemeinikRESTApp.exceptions.ActivationAccountException;
-import com.semeinik.SemeinikRESTApp.exceptions.InvalidActivationTokenException;
-import com.semeinik.SemeinikRESTApp.exceptions.PersonNotFoundException;
-import com.semeinik.SemeinikRESTApp.models.ActivationToken;
-import com.semeinik.SemeinikRESTApp.models.Person;
 import com.semeinik.SemeinikRESTApp.services.AccountActivationService;
-import com.semeinik.SemeinikRESTApp.services.ActivationTokensService;
-import com.semeinik.SemeinikRESTApp.services.EmailService;
-import com.semeinik.SemeinikRESTApp.services.PeopleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
 /**
  * Контроллер для активации аккаунта и отправки ссылки для активации.
@@ -29,6 +17,7 @@ import java.util.Optional;
  * @version 1.0
  */
 @RestController
+@RequestMapping("/activate")
 public class AccountActivationController {
     private final AccountActivationService accountActivationService;
 
@@ -47,13 +36,11 @@ public class AccountActivationController {
      * с использованием активационного токена.
      *
      * @param activationToken    Активационный токен для активации учетной записи.
-     * @return                   Ответ, указывающий на успешную активацию учетной записи.
      */
-    @GetMapping("/activate/{activationToken}")
-    public ResponseEntity<Object> activateAccount(@PathVariable String activationToken) {
+    @GetMapping("/activation-token/{activationToken}")
+    @ResponseStatus(HttpStatus.OK)
+    public void activateAccount(@PathVariable String activationToken) {
         accountActivationService.activateAccount(activationToken);
-
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -62,10 +49,9 @@ public class AccountActivationController {
      *
      * @return    Ответ, указывающий на успешную отправку активационной ссылки.
      */
-    @PostMapping("/send-activation-link")
-    public ResponseEntity<Object> sendActivationLink() {
-        accountActivationService.sendActivationLink();
-
-        return ResponseEntity.ok().build();
+    @GetMapping("/send-activation-link")
+    @ResponseStatus(HttpStatus.OK)
+    public void sendActivationLink(@RequestParam String email) {
+        accountActivationService.sendActivationLink(email);
     }
 }

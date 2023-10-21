@@ -1,4 +1,4 @@
-package com.semeinik.SemeinikRESTApp.utils;
+package com.semeinik.SemeinikRESTApp.models;
 
 import java.time.LocalDateTime;
 

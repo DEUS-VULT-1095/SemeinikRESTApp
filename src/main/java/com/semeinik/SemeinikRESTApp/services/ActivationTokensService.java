@@ -3,6 +3,7 @@ package com.semeinik.SemeinikRESTApp.services;
 import com.semeinik.SemeinikRESTApp.models.ActivationToken;
 import com.semeinik.SemeinikRESTApp.models.Person;
 import com.semeinik.SemeinikRESTApp.repositories.ActivationTokensRepository;
+import com.semeinik.SemeinikRESTApp.utils.ActivationTokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,23 +48,30 @@ public class ActivationTokensService {
     }
 
     /**
-     * Генерация и сохранение активационного токена для указанного человека.
+     * Генерация и сохранение активационного токена.
      *
-     * @param person Пользователь ({@link Person}), для которого создается активационный токен ({@link ActivationToken}).
-     * @return Созданный и сохраненный активационный токен ({@link ActivationToken}).
+     * @param activationToken Токен для активации аккаунта {@link ActivationToken}.
      */
+    @Transactional
+    public void saveToken(ActivationToken activationToken) {
+        activationTokensRepository.save(activationToken);
+    }
+
     @Transactional
     public ActivationToken generateActivationTokenAndSave(Person person) {
         UUID token;
 
         do {
-            token = UUID.randomUUID();
-        } while (activationTokensRepository.findByToken(token).isPresent());
+            token = ActivationTokenGenerator.generateActivationToken();
+        } while (findByToken(token).isPresent());
 
-        ActivationToken activationToken = new ActivationToken(token, ZonedDateTime.now(), ZonedDateTime.now().plusDays(1),
+        int daysOfValidity = 1;
+        ActivationToken activationToken = new ActivationToken(
+                token,
+                ZonedDateTime.now(),
+                ZonedDateTime.now().plusDays(daysOfValidity),
                 person);
-
-        activationTokensRepository.save(activationToken);
+        saveToken(activationToken);
 
         return activationToken;
     }

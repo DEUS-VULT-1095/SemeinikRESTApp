@@ -1,7 +1,10 @@
 package com.semeinik.SemeinikRESTApp.services;
 
+import com.semeinik.SemeinikRESTApp.dto.FamilyDTO;
+import com.semeinik.SemeinikRESTApp.exceptions.FamilyNotCreatedException;
 import com.semeinik.SemeinikRESTApp.exceptions.FamilyNotFoundException;
 import com.semeinik.SemeinikRESTApp.exceptions.PersonNotFoundException;
+import com.semeinik.SemeinikRESTApp.mappers.FamilyMapper;
 import com.semeinik.SemeinikRESTApp.models.Family;
 import com.semeinik.SemeinikRESTApp.models.Person;
 import com.semeinik.SemeinikRESTApp.repositories.FamilyRepository;
@@ -30,29 +33,50 @@ import java.util.Optional;
 public class FamilyService {
     private final FamilyRepository familyRepository;
     private final PeopleService peopleService;
+    private final FamilyMapper familyMapper;
 
     /**
      * Конструктор класса сервиса для работы с семьёй.
      *
      * @param familyRepository Репозиторий для работы с данными семей ({@link  FamilyRepository}).
-     * @param peopleService Сервис для работы с пользователями ({@link PeopleService}).
+     * @param peopleService    Сервис для работы с пользователями ({@link PeopleService}).
+     * @param familyMapper     Утилита для конвертации {@link Family} в {@link FamilyDTO} и обратно.
      */
     @Autowired
-    public FamilyService(FamilyRepository familyRepository, PeopleService peopleService) {
+    public FamilyService(FamilyRepository familyRepository, PeopleService peopleService, FamilyMapper familyMapper) {
         this.familyRepository = familyRepository;
         this.peopleService = peopleService;
+        this.familyMapper = familyMapper;
     }
 
     /**
      * Создание новой семьи ({@link Family}) и сохранение ее в БД.
      *
-     * @param family Семья ({@link Family}) для создания и сохранения.
+     * @param familyDTO DTO {@link FamilyDTO} сущности {@link Family}.
+     * @return Возвращает идентификатор созданной семьи.
      */
     @Transactional
-    public void createFamilyAndAssignFamilyIdentifier(Family family) {
-        String familyIdentifier = IdentifierFamilyGenerator.generateFamilyIdentifier();
+    public String createFamilyAndSave(FamilyDTO familyDTO, UserDetails userDetails) {
+        Person person = peopleService
+                .findByEmail(userDetails.getUsername())
+                .orElseThrow(() ->new PersonNotFoundException("Person with email \"" + userDetails.getUsername() + "\" not found"));
+
+        if (person.getFamily() != null) {
+            throw new FamilyNotCreatedException("You already have a family");
+        }
+
+        Family family = familyMapper.convertToFamily(familyDTO);
+        String familyIdentifier;
+
+        do {
+            familyIdentifier = IdentifierFamilyGenerator.generateFamilyIdentifier();
+        } while (findByFamilyIdentifier(familyIdentifier).isPresent());
+
         family.setFamilyIdentifier(familyIdentifier);
         familyRepository.save(family);
+        person.setFamily(family);
+
+        return familyIdentifier;
     }
 
     /**
