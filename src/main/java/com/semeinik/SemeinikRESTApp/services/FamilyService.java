@@ -19,14 +19,14 @@ import java.util.Optional;
 
 /**
  * Класс сервиса для работы с семейными данными.
- *
+ * <p>
  * Этот класс предоставляет методы для управления семейными данными, такими как создание новой семьи,
  * удаление семьи и поиск семьи по идентификатору семьи.
- * @Transactional(readOnly = true) Эта аннотация означает, что все методы этого класса будут выполняться внутри транзакций
- * только для чтения. Если метод выполняет не только чтение, нужно пометить его аннотацией {@code @Transactional}.
  *
  * @author Denis Kolesnikov
  * @version 1.0
+ * @Transactional(readOnly = true) Эта аннотация означает, что все методы этого класса будут выполняться внутри транзакций
+ * только для чтения. Если метод выполняет не только чтение, нужно пометить его аннотацией {@code @Transactional}.
  */
 @Service
 @Transactional(readOnly = true)
@@ -59,7 +59,7 @@ public class FamilyService {
     public String createFamilyAndSave(FamilyDTO familyDTO, UserDetails userDetails) {
         Person person = peopleService
                 .findByEmail(userDetails.getUsername())
-                .orElseThrow(() ->new PersonNotFoundException("Person with email \"" + userDetails.getUsername() + "\" not found"));
+                .orElseThrow(() -> new PersonNotFoundException("Person with email \"" + userDetails.getUsername() + "\" not found"));
 
         if (person.getFamily() != null) {
             throw new FamilyNotCreatedException("You already have a family");
@@ -105,16 +105,35 @@ public class FamilyService {
      * @throws PersonNotFoundException Если пользователь {@link Person} не найден в БД.
      * @throws FamilyNotFoundException Если у пользователя {@link Person} нет семьи {@link Family}.
      */
+    @Transactional
     public void deleteFamilyFromPerson() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Person person = peopleService.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new PersonNotFoundException("Person with email \"" + userDetails.getUsername() + "\" not found"));
+                .orElseThrow(() -> new PersonNotFoundException("Person with email '" + userDetails.getUsername() + "' not found"));
 
         if (person.getFamily() == null) {
-            throw new FamilyNotFoundException("Person with email \"" + person.getEmail() + "\" have not family");
+            throw new FamilyNotFoundException("Person with email '" + person.getEmail() + "' have not family");
         }
 
         familyRepository.delete(person.getFamily());
+    }
+
+    /**
+     * Присоединяет пользователя к существующей семье.
+     *
+     * @param familyIdentifier Идентификатор семьи ({@link Family}).
+     * @param userDetails      Объект, содержащие данные аутентификации пользователя.
+     */
+    @Transactional
+    public void joinFamily(String familyIdentifier, UserDetails userDetails) {
+        Family family = findByFamilyIdentifier(familyIdentifier).
+                orElseThrow(() -> new FamilyNotFoundException("Family with '" + familyIdentifier + "' identifier not found"));
+
+        Person person = peopleService.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new PersonNotFoundException("Person with email '" + userDetails.getUsername() + "' not found"));
+
+        person.setFamily(family);
+        family.getPeople().add(person);
     }
 }

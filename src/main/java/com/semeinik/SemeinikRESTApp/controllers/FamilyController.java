@@ -23,20 +23,24 @@ import static com.semeinik.SemeinikRESTApp.utils.ErrorMsgCreator.createErrorMsg;
 
 /**
  * Класс контроллера для управления семьями.
- *
+ * <p>
  * Этот класс предоставляет API для создания, удаления и проверки семей.
  *
- * @RestController Указывает, что этот класс является контроллером REST API.
- * @RequestMapping("/family") Определяет базовый URI для всех методов контроллера, начинающихся с "/family".
  * @author Denis Kolesnikov
  * @version 1.0
+ * @RestController Указывает, что этот класс является контроллером REST API.
+ * @RequestMapping("/family") Определяет базовый URI для всех методов контроллера, начинающихся с "/family".
  */
 @RestController
 @RequestMapping("/family")
 public class FamilyController {
-    /** Сервис для работы с семьями. */
+    /**
+     * Сервис для работы с семьями.
+     */
     private final FamilyService familyService;
-    /** Сервис для работы с пользователями. */
+    /**
+     * Сервис для работы с пользователями.
+     */
     private final PeopleService peopleService;
 
     /**
@@ -54,11 +58,11 @@ public class FamilyController {
     /**
      * Создает новую семью и связывает ее с текущим пользователем.
      *
-     * @param familyDTO DTO с данными семьи для создания ({@link FamilyDTO}).
+     * @param familyDTO     DTO с данными семьи для создания ({@link FamilyDTO}).
      * @param bindingResult Результаты проверки входных данных.
      * @return ResponseEntity, включающий Map с ключом "familyIdentifier" и значением идентификатора семьи, и статусом HttpStatus.OK.
      * @throws FamilyNotCreatedException если поля экземпляра класса {@link FamilyDTO} не прошли валидацию или у пользователь уже состоит в семье.
-     * @throws PersonNotFoundException если пользователя нет в БД.
+     * @throws PersonNotFoundException   если пользователя нет в БД.
      */
     @PostMapping("/create")
     public ResponseEntity<?> createFamily(@RequestBody @Valid FamilyDTO familyDTO, BindingResult bindingResult) {
@@ -68,10 +72,21 @@ public class FamilyController {
         }
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         String familyIdentifier = familyService.createFamilyAndSave(familyDTO, userDetails);
 
         return new ResponseEntity<>(Map.of("familyIdentifier", familyIdentifier), HttpStatus.CREATED);
+    }
+
+    /**
+     * Присоединяет пользователя к существующей семье.
+     *
+     * @param familyIdentifier Передаваемый в параметре идентификатор семьи ({@link Family}).
+     */
+    @PostMapping("/join")
+    @ResponseStatus(HttpStatus.OK)
+    public void joinFamily(@RequestParam String familyIdentifier) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        familyService.joinFamily(familyIdentifier, userDetails);
     }
 
     /**
@@ -90,10 +105,13 @@ public class FamilyController {
      * Проверяет наличие семьи ({@link Family}) по ее идентификатору.
      *
      * @param familyIdentifier Идентификатор семьи.
-     * @return ResponseEntity с булевым значением проверки наличия семьи ({@link Family}) и со статусом HttpStatus.OK.
+     * @return ResponseEntity с Мапой внутри с ключом и булевым значением проверки наличия семьи ({@link Family}) и со
+     * статусом HttpStatus.OK.
      */
     @GetMapping("/exist-family-identifier")
-    public ResponseEntity<Boolean> existFamilyIdentifier(@RequestParam String familyIdentifier) {
-        return ResponseEntity.ok(familyService.findByFamilyIdentifier(familyIdentifier).isPresent());
+    public ResponseEntity<Map<String, Boolean>> isExistFamilyIdentifier(@RequestParam String familyIdentifier) {
+        return ResponseEntity.ok(Map.of("isExistFamilyIdentifier",
+                familyService.findByFamilyIdentifier(familyIdentifier).isPresent()
+        ));
     }
 }

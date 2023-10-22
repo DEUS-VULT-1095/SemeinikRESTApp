@@ -22,10 +22,11 @@ import static com.semeinik.SemeinikRESTApp.utils.ErrorMsgCreator.createErrorMsg;
 /**
  * Контроллер для аутентификации, регистрации и управления сессиями пользователей.
  * Этот контроллер предоставляет различные эндпоинты для регистрации пользователей, входа в систему, а также управления сессиями и токенами.
- * @RestController указывает, что класс представляет собой REST-контроллер.
- * @RequestMapping задает базовый путь для всех запросов, обрабатываемых контроллером.
+ *
  * @author Denis Kolesnikov
  * @version 1.0
+ * @RestController указывает, что класс представляет собой REST-контроллер.
+ * @RequestMapping задает базовый путь для всех запросов, обрабатываемых контроллером.
  */
 @RestController
 @RequestMapping("/auth")
@@ -39,9 +40,9 @@ public class AuthController {
     /**
      * Конструктор класса AuthController.
      *
-     * @param personDTOValidator    Валидатор DTO польщователя ({@link PersonDTOValidator}).
-     * @param peopleService         Сервис для работы с данными пользователей ({@link PeopleService}).
-     * @param registrationService   Сервис для работы с регистрацией пользователей ({@link RegistrationService}).
+     * @param personDTOValidator          Валидатор DTO польщователя ({@link PersonDTOValidator}).
+     * @param peopleService               Сервис для работы с данными пользователей ({@link PeopleService}).
+     * @param registrationService         Сервис для работы с регистрацией пользователей ({@link RegistrationService}).
      * @param authenticationLogoutService Сервис для работы с аутентификацией и логаутом ({@link AuthenticationLogoutService}).
      */
     @Autowired
@@ -56,7 +57,7 @@ public class AuthController {
     /**
      * Выполняет регистрацию пользователя.
      *
-     * @param personDTO {@link PersonDTO} Объект, содержащий данные пользователя для регистрации.
+     * @param personDTO     {@link PersonDTO} Объект, содержащий данные пользователя для регистрации.
      * @param bindingResult Результаты проверки входных данных.
      */
     @PostMapping("/register-person")
@@ -75,8 +76,8 @@ public class AuthController {
     /**
      * Метод выполняет запрос на аутентификацию пользователя. После успешной аутентификации возвращает JWT в теле ответа.
      *
-     * @param authDTO   Объект, содержащий учётные данные пользователя: email и пароль.
-     * @param response  Ответ, в который будет добавлен JWT-токен и в который будет добавлен куки "refreshToken".
+     * @param authDTO  Объект, содержащий учётные данные пользователя: email и пароль.
+     * @param response Ответ, в который будет добавлен JWT-токен и в который будет добавлен куки "refreshToken".
      * @return ResponseEntity Ответ на запрос, включая JWT-токен, и статус HttpStatus.OK, если вход успешен.
      * @see AuthDTO
      * @see JWTUtil
@@ -120,14 +121,14 @@ public class AuthController {
     /**
      * Проверяет наличие пользователя с заданным адресом электронной почты в БД.
      *
-     * @param email      Адрес электронной почты для проверки, есть ли он уже в БД.
-     * @return ResponseEntity с булевым значением, указывающим наличие пользователя с заданным адресом электронной почты,
-     * и статусом HttpStatus.OK, если проверка выполнена успешно.
+     * @param email Адрес электронной почты для проверки, есть ли он уже в БД.
+     * @return ResponseEntity с Мапой с ключом строки и булевым значением, указывающим наличие пользователя с заданным
+     * адресом электронной почты и статусом HttpStatus.OK, если проверка выполнена успешно.
      */
     @GetMapping("/exist-email")
-    public ResponseEntity<Boolean> existEmail(@RequestParam String email) {
+    public ResponseEntity<Map<String, Boolean>> existEmail(@RequestParam String email) {
 
-        return ResponseEntity.ok(peopleService.findByEmail(email).isPresent());
+        return ResponseEntity.ok(Map.of("isExist", peopleService.findByEmail(email).isPresent()));
     }
 
     // тестовый метод

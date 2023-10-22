@@ -91,7 +91,7 @@ public class AuthenticationLogoutService {
         }
 
         Cookie cookie = sessionsService.generateCookieAndSaveSession(person);
-
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
 
         return jwtUtil.generateToken(person.getId(), person.getEmail(), person.getRole(), person.getFamily());
@@ -149,6 +149,7 @@ public class AuthenticationLogoutService {
 
         Person person = session.getPerson();
         Cookie newCookie = sessionsService.generateCookieAndSaveSession(person);
+        newCookie.setHttpOnly(true);
         response.addCookie(newCookie);
 
         return jwtUtil.generateToken(person.getId(), person.getEmail(), person.getRole(), person.getFamily());
