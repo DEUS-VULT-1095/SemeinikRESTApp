@@ -29,13 +29,13 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "email")
-    @Email(message = "It's not email format")
+    @Pattern( regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Поле должно соответсвовать email формату")
     private String email;
     @Column(name = "name")
-    @NotEmpty(message = "Имя не должно быть пустым.")
-    @NotNull(message = "Имя не должно быть пустым.")
-    @Pattern(regexp = "^[A-Za-zА-Яа-я-]{3,30}$", message = "Имя должно состоять из латинских или русских букв." +
-            " Не содержать пробелы. Может содержать символ дефиса \"-\". От 3-х до 30-ти символов включительно.")
+//    @NotEmpty(message = "Имя не должно быть пустым.")
+//    @NotNull(message = "Имя не должно быть пустым.")
+//    @Pattern(regexp = "^[A-Za-zА-Яа-я-]{3,30}$", message = "Имя должно состоять из латинских или русских букв." +
+//            " Не содержать пробелы. Может содержать символ дефиса \"-\". От 3-х до 30-ти символов включительно.")
     private String name;
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;

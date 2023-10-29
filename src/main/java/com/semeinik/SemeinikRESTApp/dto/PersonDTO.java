@@ -19,32 +19,32 @@ import java.time.LocalDate;
  * @version 1.0
  */
 public class PersonDTO {
-    @Email(message = "It's not email format")
+    @Pattern( regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Поле должно соответсвовать email формату")
     private String email; // Адрес электронной почты пользователя.
-    @NotEmpty(message = "Имя не должно быть пустым.")
-    @NotNull(message = "Имя не должно быть пустым.")
-    @Pattern(regexp = "^[A-Za-zА-Яа-я-]{3,30}$", message = "Имя должно состоять из латинских или русских букв." +
-            " Не содержать пробелы. Может содержать символ дефиса \"-\". От 3-х до 30-ти символов включительно.")
+//    @NotEmpty(message = "Имя не должно быть пустым.")
+//    @NotNull(message = "Имя не должно быть пустым.")
+//    @Pattern(regexp = "^[A-Za-zА-Яа-я-]{3,30}$", message = "Имя должно состоять из латинских или русских букв." +
+//            " Не содержать пробелы. Может содержать символ дефиса \"-\". От 3-х до 30-ти символов включительно.")
     private String name; // Имя пользователя.
     private LocalDate dateOfBirth; // Дата рождения пользователя.
     private FamilyRole familyRole; // Роль пользователя в семье.
     @NotEmpty(message = "Пароль не может быть пустым.")
     @NotNull(message = "Пароль не может быть пустым.")
-    @Pattern(regexp = "^\\w{8,30}$", message = "Пароль может содержать любой буквенно-цифровой симвло и знак подчёркивания." +
-            " От 8-ми до 30-ти символов.")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,16}$", message = "Пароль должен содержать от 8 до 16 " +
+            "символов, включающих в себя латинские буквы верхнего (A...Z) и нижнего (a...z) регистров, а также цифры")
     private String password; // Пароль пользователя.
-    private String confirmPassword; // Подтверждение пароля пользователя.
+//    private String confirmPassword; // Подтверждение пароля пользователя.
 
     public PersonDTO() {
     }
 
-    public PersonDTO(String email, String name, LocalDate dateOfBirth, FamilyRole familyRole, String password, String confirmPassword) {
+    public PersonDTO(String email, String name, LocalDate dateOfBirth, FamilyRole familyRole, String password) {
         this.email = email;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.familyRole = familyRole;
         this.password = password;
-        this.confirmPassword = confirmPassword;
+        //this.confirmPassword = confirmPassword;
     }
 
     public String getEmail() {
@@ -87,11 +87,11 @@ public class PersonDTO {
         this.password = password;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
+//    public String getConfirmPassword() {
+//        return confirmPassword;
+//    }
+//
+//    public void setConfirmPassword(String confirmPassword) {
+//        this.confirmPassword = confirmPassword;
+//    }
 }

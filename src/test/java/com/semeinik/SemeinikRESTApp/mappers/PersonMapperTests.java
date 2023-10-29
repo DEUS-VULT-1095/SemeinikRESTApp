@@ -36,7 +36,7 @@ public class PersonMapperTests {
     @Test
     void testConvertToPerson_whenProvidedPersonDTO_returnsPerson() {
         // Arrange
-        PersonDTO personDTO = new PersonDTO(email, name, dateOfBirth, familyRole, password, confirmPassword);
+        PersonDTO personDTO = new PersonDTO(email, name, dateOfBirth, familyRole, password);
 
         // Act
         Person person = personMapper.convertToPerson(personDTO);

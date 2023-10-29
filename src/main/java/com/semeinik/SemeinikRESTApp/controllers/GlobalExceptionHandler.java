@@ -5,6 +5,7 @@ import com.semeinik.SemeinikRESTApp.exceptions.*;
 import com.semeinik.SemeinikRESTApp.models.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
@@ -118,6 +119,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleInvalidEmailException(InvalidEmailException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

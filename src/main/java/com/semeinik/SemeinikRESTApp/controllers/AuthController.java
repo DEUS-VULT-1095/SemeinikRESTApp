@@ -64,6 +64,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public void performRegistrationPerson(@RequestBody @Valid PersonDTO personDTO, BindingResult bindingResult) {
 
+        if (personDTO == null) {
+            throw new PersonNotAddedException("asd");
+        }
+
         personDTOValidator.validate(personDTO, bindingResult);
 
         if (bindingResult.hasErrors()) {

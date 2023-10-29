@@ -50,9 +50,9 @@ public final class PersonDTOValidator implements Validator {
         PersonDTO personDTO = (PersonDTO) target;
 
         // Проверка на совпадение пароля и подтверждения пароля
-        if (!personDTO.getPassword().equals(personDTO.getConfirmPassword())) {
-            errors.rejectValue("confirmPassword", "", "Confirm password is not correct");
-        }
+//        if (!personDTO.getPassword().equals(personDTO.getConfirmPassword())) {
+//            errors.rejectValue("confirmPassword", "", "Confirm password is not correct");
+//        }
 
         // Проверка уникальности адреса электронной почты (email) среди пользователей
         if (peopleService.findByEmail(personDTO.getEmail()).isPresent()) {
